@@ -34,7 +34,7 @@ emotion_items <- c("AngAffect_Unadj","FearAffect_Unadj","Sadness_Unadj")
 MRI_have_sub %>% select(Subject,Gender,Age_in_Yrs,Handedness,Race,SSAGA_Educ,BMI)  %>% inner_join(cognition_data,by=c("Subject","Gender")) %>% 
   select(Subject,Gender,Age_in_Yrs,Race,SSAGA_Educ,all_of(more_cognition),emotion_items)-> all_func_data_items
 
-mean_motion_data<- import("project_code/motion_info_func.xlsx")
+mean_motion_data<- import("project_code/HCPA_motion_info_func.xlsx")
 mean_motion_data$Subject <- as.numeric(str_remove(mean_motion_data$Subject,"sub-"))
 all_func_data_items <- all_func_data_items %>% inner_join(mean_motion_data)%>% filter(mean_motion<0.2)%>%na.omit()
 
