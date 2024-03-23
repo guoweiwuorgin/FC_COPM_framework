@@ -47,7 +47,7 @@ Behaviors <- c("WM_Task_2bk_Median_RT","Language_Task_Story_Avg_Difficulty_Level
   "FearAffect","Sadness","Loneliness","PercReject","PercStress",
   "InstruSupp","LifeSatisf")
 
-label_colors <- c(rep("#e8c4f7",9),rep("#9b1ed1",16))
+label_colors <- c(rep("#9dc3e6",9),rep("#f4b183",16))
 
 
 R %>% filter(Behaviors != "IWRD_TOT") -> Real_R
@@ -56,8 +56,7 @@ Real_R$signifcant <- factor(Real_R$signifcant)
 Real_R %>%
 ggplot(aes(x=reorder(Behaviors,abs_R),y=abs_R,fill=signifcant))+geom_col(position = position_dodge2())+theme_classic(base_size = 20)+
   theme(text = element_text(angle = 30,hjust = 1),axis.text.x = element_text(colour = label_colors))+
-  geom_text(aes(label=round(abs_R,2),vjust = -0.5),size=7)+
-  scale_fill_manual(values = c("#e8c4f7","#9b1ed1")) -> cognitive_loading
+  scale_fill_manual(values = c("#9dc3e6","#f4b183")) -> cognitive_loading
 
 ggsave(filename = "cognitive_loading.png",cognitive_loading,width = 580, 
        height = 280, dpi = 300, units = "mm", device='png')
@@ -218,7 +217,7 @@ d_COPM_Full_FC <- sort(d_COPM_Full_FC) # sort to compute empirical CI
 abline(v = d_COPM_Full_FC[c(0.025*B, 0.975*B)], lty = 2, col = "red")
 
 color_sets2 <- c("#7a1ed1","#ca7aec","#e9c9e9")
-
+color_sets3 <- c("#7a1ed1","#ca7aec","white")
 R_compared_data_plot <- R_compared_data
 
 
@@ -237,13 +236,13 @@ fit_lines <- long_pred_data %>%
 
 fit_lines %>%
   ggplot(aes(x = Pred_ACC, y = Ontology_Bh_R)) +
-  geom_point(size=5, aes(color = Model_Type, fill = Model_Type, shape = Model_Type)) +
-  geom_line(aes(y = fit_abs_R, group = interaction(Model_Type), color = Model_Type), linewidth = 1) +
+  geom_point(size=6, aes(color = Model_Type, fill = Model_Type, shape = Model_Type,stroke=2.5)) +
+  geom_line(aes(y = fit_abs_R, group = interaction(Model_Type), color = Model_Type), linewidth = 3) +
   theme_classic(base_size = 20) +
   xlab("Mean Prediction Accuracy of COPM") +
   ylab("Correlation with Cognitive Ontology Score in Behaviour Score") +
-  scale_color_manual(values = color_sets2) +
-  scale_fill_manual(values = color_sets2) -> Corr_BH_PredACC
+  scale_color_manual(values = color_sets2) + scale_shape_manual(values = c(16,17,0))+
+  scale_fill_manual(values = color_sets3) -> Corr_BH_PredACC
 
 ggsave(filename = "Corr_BH_PredACC.png",Corr_BH_PredACC,width = 300, 
        height = 280, dpi = 300, units = "mm", device='png')
