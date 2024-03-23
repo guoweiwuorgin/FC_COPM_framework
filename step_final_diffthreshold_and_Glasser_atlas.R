@@ -137,6 +137,7 @@ for(thr in unique(diff_threshold_long$Thresholds)) {
   Corr_re <- cor.test(psych::fisherz(CM_data$mean_R_threshold),CM_data$abs_R,method = "spearman")
   print(paste0("Thresholding " ,thr, " R value = ",as.character(Corr_re$estimate),"  p value = ",as.character(Corr_re$p.value)))
 }
+p.adjust(c(0.020,0.021,0.024,0.03))
 diff_threshold_long %>%group_by(Behaviors,Thresholds)%>%summarise(mean_R_threshold_rCPM = mean(Predicted_R)) %>% ungroup()->tmp_data
 tmp_data %>% inner_join(ALL_model_pred_and_Behavior_Ontology_correlation) -> CM_data_rCPM
 

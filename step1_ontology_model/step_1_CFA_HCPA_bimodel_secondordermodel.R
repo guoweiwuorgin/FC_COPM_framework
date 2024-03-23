@@ -74,17 +74,38 @@ m2a  <- ' EF1 =~ CardSort_Unadj+Flanker_Unadj + ProcSpeed_Unadj
           Cog =~ EF1+EF2+Relation+LAN+FI '
 
 
-m2a_bi  <- 'EF1 =~ CardSort_Unadj+Flanker_Unadj + ProcSpeed_Unadj
-          EF2 =~ WM_Task_2bk_Acc + ListSort_Unadj+PicSeq_Unadj
-          FI=~PMAT24_A_CR+PMAT24_A_SI+PMAT24_A_RTCR
-          Relation =~ Relational_Task_Match_Median_RT+Relational_Task_Rel_Median_RT
-          LAN =~ PicVocab_Unadj+ReadEng_Unadj
-          Cog =~ CardSort_Unadj+Flanker_Unadj+ProcSpeed_Unadj+WM_Task_2bk_Acc+ListSort_Unadj+PicSeq_Unadj+PMAT24_A_CR+PMAT24_A_SI+PMAT24_A_RTCR+Relational_Task_Match_Median_RT+Relational_Task_Rel_Median_RT+PicVocab_Unadj+ReadEng_Unadj'
+m2a_bi  <- '
+EF1 =~ CardSort_Unadj + Flanker_Unadj + ProcSpeed_Unadj
+EF2 =~ WM_Task_2bk_Acc + ListSort_Unadj + PicSeq_Unadj
+FI =~ PMAT24_A_CR + PMAT24_A_SI + PMAT24_A_RTCR
+Relation =~ Relational_Task_Match_Median_RT + Relational_Task_Rel_Median_RT
+LAN =~ PicVocab_Unadj + ReadEng_Unadj
+Cog =~ CardSort_Unadj + Flanker_Unadj + ProcSpeed_Unadj + WM_Task_2bk_Acc + ListSort_Unadj + PicSeq_Unadj + PMAT24_A_CR + PMAT24_A_SI + PMAT24_A_RTCR + Relational_Task_Match_Median_RT + Relational_Task_Rel_Median_RT + PicVocab_Unadj + ReadEng_Unadj
+
+# Domain factors are not correlated with g
+Cog ~~ 0*EF1
+Cog ~~ 0*EF2
+Cog ~~ 0*FI
+Cog ~~ 0*LAN
+Cog ~~ 0*Relation
+
+# Domain factors are not correlated with one another
+EF1 ~~ 0*EF2
+EF1 ~~ 0*FI
+EF1 ~~ 0*LAN
+EF1 ~~ 0*Relation
+EF2 ~~ 0*FI
+EF2 ~~ 0*LAN
+EF2 ~~ 0*Relation
+LAN ~~ 0*FI
+LAN ~~ 0*Relation
+FI ~~ 0*Relation
+'
 
 iter<-1
 z_score_data_residual <- cbind(z_score_data,all_func_data_items[,2:3])
 for(variable in names(z_score_data_residual[,1:32])){
-  lm_reg_formula <- as.formula(paste0(variable,'~Gender+Age_in_Yrs'))
+  lm_reg_formula <- as.formula(paste0(variable,'~Gender+Age_in_Yrs'))#regress gender and age
   lm_reg_age_sex_IQ <- lm(lm_reg_formula,z_score_data_residual)
   if(iter==1){
     reg_cov_time3 <- data.frame(lm_reg_age_sex_IQ$residuals)
@@ -98,11 +119,15 @@ z_score_data <- select(reg_cov_time3,CardSort_Unadj,Flanker_Unadj,ProcSpeed_Unad
                         WM_Task_2bk_Acc,ListSort_Unadj,PicSeq_Unadj,PMAT24_A_CR,
                         PMAT24_A_SI,PMAT24_A_RTCR,Relational_Task_Match_Median_RT,
                         Relational_Task_Rel_Median_RT,PicVocab_Unadj,ReadEng_Unadj)
-fit_behav2 <- lavaan::cfa(m2a_bi, data = z_score_data, std.lv=TRUE,estimator='ML', orthogonal = TRUE , mimic =c("MPlus"),check.gradient = FALSE)
+#bifactor
+fit_behav2 <- lavaan::cfa(m2a_bi, data = z_score_data, std.lv=TRUE,estimator='MLR', orthogonal = TRUE , mimic =c("MPlus"),check.gradient = FALSE)
 fitMeasures(fit_behav2, c('chisq', 'df', 'pvalue', 'cfi', 'rmsea', 'srmr', 'AIC'))
+#second order
 fit_behav3 <- lavaan::cfa(m2a, data = z_score_data, std.lv=TRUE, orthogonal = TRUE , mimic =c("MPlus"),check.gradient = FALSE)
+fitMeasures(fit_behav3, c('chisq', 'df', 'pvalue', 'cfi', 'rmsea', 'srmr', 'AIC'))
 
-bruceR::CFA(z_score_data,model =m2a)
+summary(fit_behav2, fit.measures=TRUE, standardized=TRUE)
+summary(fit_behav3, fit.measures=TRUE, standardized=TRUE)
 
 predicted_latent_var1 <- lavPredict(fit_behav2)
 predicted_latent_var2 <- lavPredict(fit_behav3)
