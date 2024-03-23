@@ -19,11 +19,13 @@ long_ontology_score_pred_all %>% filter(Type=="Real") %>%
 
 
 
-pred_data <- import("E:/FC_ontology_project/New_results/Cognitive_ontology/data_re_4.mat")
+pred_data <- import("D:/FC_ontology_project/New_results/Cognitive_ontology/data_re_4.mat")
 ytest <- pred_data$Results$y_test_all[[1]]
 ypred <- pred_data$Results$yhat[[1]]
 cognitive_pred <- data.frame(True_score=c(ytest[,1],ytest[,2]),Test_score=c(ypred[,1],ypred[,2]),Folder = c(rep("Folder1",300),rep("Folder2",300)),
                              subid=rep(1:300,2))
+cognitive_pred <- cognitive_pred %>% group_by(subid) %>% summarise(True_score=mean(True_score),Test_score=mean(Test_score))%>%
+  ungroup() %>% mutate(Folder=rep("Folder1",300))
 library(ggtree)
   cognitive_pred  %>% 
   ggplot(aes(True_score,Test_score))+
@@ -31,9 +33,11 @@ library(ggtree)
   geom_smooth(method = "lm",aes(color=Folder)) + 
   xlab("True Score of Cognitive Ontology Score")+
   ylab("Predicted Score of Cognitive Ontology Score")+
-  scale_color_manual(values = c("#e8c4f7","#cd99d8")) -> cognitive_ontology_pred_sig
+  scale_color_manual(values = "#cd99d8") -> cognitive_ontology_pred_sig
   ggsave(filename = "cognitive_ontology_pred_sig.png",cognitive_ontology_pred_sig,width = 300, 
          height = 280, dpi = 300, units = "mm", device='png')
+  
+  
   
 tmp_data%>%filter(!(Type_comb %in% c('RealEmotion','RealEndurance_Unadj'))) %>%
   ggplot(aes(x = reorder(Ontology_categary,Predict_R), y = Predict_R, fill = Type_comb)) +

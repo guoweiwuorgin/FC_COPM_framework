@@ -7,14 +7,17 @@ ytest <- pred_data$Results$y_test_all[[1]]
 ypred <- pred_data$Results$yhat[[1]]
 cognitive_pred <- data.frame(True_score=c(ytest[,1],ytest[,2]),Test_score=c(ypred[,1],ypred[,2]),Folder = c(rep("Folder1",300),rep("Folder2",300)),
                              subid=rep(1:300,2))
+cognitive_pred <- cognitive_pred %>% group_by(subid) %>% summarise(True_score=mean(True_score),Test_score=mean(Test_score))%>%
+  ungroup() %>% mutate(Folder=rep("Folder1",300))
+
 library(ggtree)
 cognitive_pred  %>% 
   ggplot(aes(True_score,Test_score))+
-  geom_point2(size=6,alpha=0.9,aes(color=as.factor(Folder),fill=as.factor(Folder)))+theme_classic(base_size = 25)+
+  geom_point2(size=6,alpha=0.9,aes(color=Folder,fill=Folder))+theme_classic(base_size = 25)+
   geom_smooth(method = "lm",aes(color=Folder)) + 
   xlab("True Score of Cognitive Ontology Score")+
   ylab("Predicted Score of Cognitive Ontology Score")+
-  scale_color_manual(values = c("#e8c4f0","#9b1ed1")) -> cognitive_ontology_pred_sig
+  scale_color_manual(values = "#cd99d8") -> cognitive_ontology_pred_sig
 ggsave(filename = "cognitive_ontology_pred_sig_bifactor.png",cognitive_ontology_pred_sig,width = 300, 
        height = 280, dpi = 300, units = "mm", device='png')
 
