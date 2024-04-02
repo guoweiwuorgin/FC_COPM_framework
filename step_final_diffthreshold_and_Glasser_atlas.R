@@ -177,24 +177,10 @@ for (thr_n in unique(fit_lines$Thresholds)) {
   
 }
 
-
-
-
-
 cocor(~mean_R_threshold_rCPM + abs_R | mean_R_threshold_COPM + abs_R, threhold2_data)
 
 CM_data_rCPM %>% inner_join(CM_data_COPM) %>%  filter(Thresholds==3) %>% as.data.frame() -> threhold3_data
 
 cocor(~mean_R_threshold_rCPM + abs_R | mean_R_threshold_COPM + abs_R, threhold3_data)
-
-
-CM_data_rCPM %>% inner_join(CM_data_COPM) %>%  filter(Thresholds==4) %>% as.data.frame() -> threhold4_data
-
-cocor(~mean_R_threshold_rCPM + abs_R | mean_R_threshold_COPM + abs_R, threhold4_data)
-
-
-CM_data_rCPM %>% inner_join(CM_data_COPM) %>%  filter(Thresholds==5) %>% as.data.frame() -> threhold5_data
-
-cocor(~mean_R_threshold_rCPM + abs_R | mean_R_threshold_COPM + abs_R, threhold5_data)
 
 
